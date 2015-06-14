@@ -1,0 +1,82 @@
+.field private lasDoubletHomeKeyTime:J
+
+.field private final mHomeKeyTap:Ljava/lang/Runnable;
+
+.method public doublePressHome(I)Z
+    .locals 3
+
+    .prologue
+    const/4 v0, 0x1
+
+    iget-object v1, p0, Lcom/android/internal/policy/impl/PhoneWindowManager;->mContext:Landroid/content/Context;
+
+    invoke-virtual {v1}, Landroid/content/Context;->getContentResolver()Landroid/content/ContentResolver;
+
+    move-result-object v1
+
+    const-string v2, "double_press_home_lock_screen"
+
+    invoke-static {v1, v2, v0}, Landroid/provider/Settings$System;->getInt(Landroid/content/ContentResolver;Ljava/lang/String;I)I
+
+    move-result v1
+
+    if-ne v1, v0, :cond_1
+
+    invoke-direct/range {p0 .. p0}, Lcom/android/internal/policy/impl/PhoneWindowManager;->handleDoubleKeyEvents()V
+
+    :goto_0
+    return v0
+
+    :cond_1
+    const/4 v0, 0x0
+
+    goto :goto_0
+.end method
+
+.method private handleDoubleKeyEvents()V
+    .locals 6
+
+    .prologue
+    const-wide/16 v4, 0xc8
+
+    invoke-static {}, Landroid/os/SystemClock;->uptimeMillis()J
+
+    move-result-wide v0
+
+    .local v0, "now":J
+    iget-wide v2, p0, Lcom/android/internal/policy/impl/PhoneWindowManager;->lasDoubletHomeKeyTime:J
+
+    sub-long v2, v0, v2
+
+    cmp-long v2, v2, v4
+
+    if-gez v2, :cond_0
+
+    iget-object v2, p0, Lcom/android/internal/policy/impl/PhoneWindowManager;->mHandler:Landroid/os/Handler;
+
+    iget-object v3, p0, Lcom/android/internal/policy/impl/PhoneWindowManager;->mHomeKeyTap:Ljava/lang/Runnable;
+
+    invoke-virtual {v2, v3}, Landroid/os/Handler;->removeCallbacks(Ljava/lang/Runnable;)V
+
+    iget-object v2, p0, Lcom/android/internal/policy/impl/PhoneWindowManager;->mPowerManager:Landroid/os/PowerManager;
+
+    invoke-static {}, Landroid/os/SystemClock;->uptimeMillis()J
+
+    move-result-wide v3
+
+    invoke-virtual {v2, v3, v4}, Landroid/os/PowerManager;->goToSleep(J)V
+
+    :goto_0
+    iput-wide v0, p0, Lcom/android/internal/policy/impl/PhoneWindowManager;->lasDoubletHomeKeyTime:J
+
+    return-void
+
+    :cond_0
+    iget-object v2, p0, Lcom/android/internal/policy/impl/PhoneWindowManager;->mHandler:Landroid/os/Handler;
+
+    iget-object v3, p0, Lcom/android/internal/policy/impl/PhoneWindowManager;->mHomeKeyTap:Ljava/lang/Runnable;
+
+    invoke-virtual {v2, v3, v4, v5}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
+
+    goto :goto_0
+.end method

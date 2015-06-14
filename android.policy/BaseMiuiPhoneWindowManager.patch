@@ -1,0 +1,32 @@
+From 7b8a6735b2b007598ca0fee994b887acbca726c4 Mon Sep 17 00:00:00 2001
+From: gtbluesky <gantaobluesky@gmail.com>
+Date: Sun, 24 May 2015 22:31:04 +0800
+Subject: [PATCH] add double press home to lock screen
+
+---
+ .../internal/policy/impl/BaseMiuiPhoneWindowManager.smali     | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+--- a/android.policy/smali/com/android/internal/policy/impl/BaseMiuiPhoneWindowManager.smali
++++ b/android.policy/smali/com/android/internal/policy/impl/BaseMiuiPhoneWindowManager.smali
+@@ -1866,6 +1866,17 @@
+ 
+     .end local v7    # "sbm":Landroid/app/StatusBarManager;
+     :cond_d
++    move/from16 v11, p3
++
++    invoke-super {p0, v11}, Lcom/android/internal/policy/impl/PhoneWindowManager;->doublePressHome(I)Z
++
++    move-result v11
++
++    if-eqz v11, :cond_miui
++
++    goto :goto_3
++
++    :cond_miui
+     invoke-virtual {p0}, Lcom/android/internal/policy/impl/BaseMiuiPhoneWindowManager;->launchHomeFromHotKey()V
+     :try_end_0
+     .catch Landroid/os/RemoteException; {:try_start_0 .. :try_end_0} :catch_0
+-- 
+1.8.1.2
+
